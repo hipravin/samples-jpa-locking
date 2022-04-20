@@ -3,7 +3,6 @@ package com.hipravin.samplesjpalocking.repository;
 import com.hipravin.samplesjpalocking.repository.entity.AccountEntity;
 import com.hipravin.samplesjpalocking.repository.exception.OperationFailedException;
 import com.hipravin.samplesjpalocking.repository.exception.OperationForbiddenException;
-import org.assertj.core.internal.BigDecimals;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

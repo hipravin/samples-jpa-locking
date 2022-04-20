@@ -7,12 +7,18 @@ import com.hipravin.samplesjpalocking.repository.exception.OperationForbiddenExc
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.Assert;
 
-import javax.persistence.EntityManager;
+import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Repository
 @Transactional
@@ -27,8 +33,11 @@ class AccountRepositoryImpl implements AccountRepository {
     @Override
     public void transfer(long ownerClientId, long accountIdFrom, long accountIdTo, BigDecimal transferAmount)
             throws OperationFailedException {
-        AccountEntity accountFrom = em.find(AccountEntity.class, accountIdFrom);
-        AccountEntity accountTo = em.find(AccountEntity.class, accountIdTo);
+
+        Map<Long, AccountEntity> accountsMap = findByIdsWithPessimisticLock(accountIdFrom, accountIdTo);
+
+        AccountEntity accountFrom = accountsMap.get(accountIdFrom);
+        AccountEntity accountTo = accountsMap.get(accountIdTo);
         ClientEntity client = em.find(ClientEntity.class, ownerClientId);
 
         checkAmountPositive(transferAmount);
@@ -43,6 +52,21 @@ class AccountRepositoryImpl implements AccountRepository {
 
         accountFrom.setAvailableAmount(fromAfterTransfer);
         accountTo.setAvailableAmount(toAfterTransfer);
+    }
+
+    Map<Long, AccountEntity> findByIdsWithPessimisticLock(long... accountIds) {
+        if(accountIds.length == 0) {
+            throw new IllegalArgumentException("empty accountIds array");
+        }
+
+        TypedQuery<AccountEntity> byIdsQuery = em.createNamedQuery("AccountEntity.findByIdsIn", AccountEntity.class);
+        byIdsQuery.setParameter("accountIds", Arrays.stream(accountIds).boxed().toList());
+        byIdsQuery.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+
+        List<AccountEntity> accounts = byIdsQuery.getResultList();
+
+        return accounts.stream()
+                .collect(Collectors.toMap(AccountEntity::getAccountId, Function.identity()));
     }
 
     static void checkAmountPositive(BigDecimal amount) throws OperationFailedException{
