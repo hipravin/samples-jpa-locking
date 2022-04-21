@@ -15,7 +15,7 @@ CREATE TABLE account
 (
     account_id BIGSERIAL PRIMARY KEY,
     client_id BIGINT NOT NULL REFERENCES client(client_id),
-    available_amount MONEY NOT NULL
+    available_amount NUMERIC(19,2) NOT NULL
 );
 
 ALTER SEQUENCE account_account_id_seq INCREMENT BY 100 RESTART 100;

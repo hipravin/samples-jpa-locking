@@ -1,16 +1,21 @@
+server:
+  port: 8061
+
+
 spring:
   jpa:
     properties:
       hibernate:
+        default_schema: samples_jpa_locking
         order_inserts: true
+        order_updates: true
+#        generate_statistics: true
         jdbc:
           batch_size: 100
           time_zone: UTC
 
     hibernate:
       ddl-auto: none
-
-
 ---
 spring:
   config:

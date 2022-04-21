@@ -9,10 +9,14 @@ spring:
     init:
       mode: always
 
+  jpa:
+    properties:
+      hibernate:
+        default_schema: #override with empty value for embedded
+        generate_statistics: true
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
-    org.hsqldb: DEBUG
 
-#    org.springframework: DEBUG
+    org.springframework: DEBUG

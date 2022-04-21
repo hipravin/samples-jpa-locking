@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 @Table(name = "ACCOUNT")
 @NamedQueries({
         @NamedQuery(name = "AccountEntity.findByIdsIn",
-                query="select a from AccountEntity a join fetch a.client where a.client.clientId in (:accountIds)")
+                query="select a from AccountEntity a join fetch a.client where a.accountId in (:accountIds)")
 })
 public class AccountEntity {
     @Id
