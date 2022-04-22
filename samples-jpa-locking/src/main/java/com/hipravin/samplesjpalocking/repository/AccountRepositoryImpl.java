@@ -7,9 +7,10 @@ import com.hipravin.samplesjpalocking.repository.exception.OperationForbiddenExc
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.Assert;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -21,7 +22,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Repository
-@Transactional
+@Transactional(rollbackOn = {OperationFailedException.class})
 class AccountRepositoryImpl implements AccountRepository {
     private static final Logger log = LoggerFactory.getLogger(AccountRepositoryImpl.class);
     private final EntityManager em;
